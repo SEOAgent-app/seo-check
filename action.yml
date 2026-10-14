@@ -1,5 +1,5 @@
 name: SEOAgent SEO Check
-description: Crawl a pull request's preview deployment and comment the SEO problems it finds (titles, meta, canonicals, H1s, schema, alt text, robots, sitemap).
+description: "Comment the SEO problems in each pull request's preview deployment: titles, meta, canonicals, schema, alt text, sitemap."
 author: SEOAgent
 branding:
   icon: search
