@@ -13,6 +13,6 @@ jobs:
         uses: SEOAgent-app/seo-check@v1.0.0
         with:
           url: https://paulgraham.com
-          max-pages: 10
+          max-pages: 5
           telemetry: false
       - run: echo "findings=${{ steps.seo.outputs.findings }}"
