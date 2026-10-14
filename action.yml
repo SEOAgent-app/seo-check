@@ -1,0 +1,60 @@
+name: SEOAgent SEO Check
+description: Crawl a pull request's preview deployment and comment the SEO problems it finds (titles, meta, canonicals, H1s, schema, alt text, robots, sitemap).
+author: SEOAgent
+branding:
+  icon: search
+  color: green
+
+inputs:
+  url:
+    description: 'Origin to crawl, e.g. the preview deployment URL (`github.event.deployment_status.target_url`).'
+    required: true
+  github-token:
+    description: 'Token used to find the pull request and post the comment. Needs `pull-requests: write`.'
+    required: false
+    default: ${{ github.token }}
+  max-pages:
+    description: 'Most pages to crawl (1-500). Keep it small so PR runs stay fast.'
+    required: false
+    default: '50'
+  comment:
+    description: 'Post (or update) one comment on the pull request. The job summary is always written.'
+    required: false
+    default: 'true'
+  fail-on:
+    description: '`none` never fails the job on findings; `findings` fails it when any problem is found.'
+    required: false
+    default: none
+  preview:
+    description: "`auto` (default) checks pull request and non-production deployment URLs as previews: the host's preview noindex header and canonicals pointing at production are read as they will ship. `true` or `false` to force it."
+    required: false
+    default: auto
+  vercel-bypass-secret:
+    description: 'Vercel Protection Bypass for Automation secret, for previews behind Deployment Protection. Pass it from a repository secret. Sent only to the `url` origin.'
+    required: false
+    default: ''
+  telemetry:
+    description: "Set to `false` to turn off the SEOAgent CLI's anonymous usage ping (same as `SEOAGENT_TELEMETRY=0`)."
+    required: false
+    default: 'true'
+
+outputs:
+  findings:
+    description: 'Number of problems found (empty when the check was skipped).'
+    value: ${{ steps.check.outputs.findings }}
+
+runs:
+  using: composite
+  steps:
+    - id: check
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/src/main.mjs"
+      env:
+        INPUT_URL: ${{ inputs.url }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
+        INPUT_MAX_PAGES: ${{ inputs.max-pages }}
+        INPUT_COMMENT: ${{ inputs.comment }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_PREVIEW: ${{ inputs.preview }}
+        INPUT_VERCEL_BYPASS_SECRET: ${{ inputs.vercel-bypass-secret }}
+        INPUT_TELEMETRY: ${{ inputs.telemetry }}
